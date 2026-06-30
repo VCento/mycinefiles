@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+/* Brand theme — dark premium with violet / cine-red / gold accents. */
+@theme {
+  --color-cine-red: #e11d48;
+  --color-cine-gold: #f5c451;
+  --color-violet-400: #a78bfa;
+  --color-violet-500: #8b5cf6;
+  --color-violet-600: #7c3aed;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background-color: #0a0a0b;
+  color: #fafafa;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+}
