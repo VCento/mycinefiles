@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { requireUser } from "@/lib/auth/session";
 import { AppShell } from "@/components/AppShell";
+import { ProgressSteps } from "@/components/create/ProgressSteps";
 import { copy } from "@/lib/copy/es";
 
 // Always evaluate the session on request — never statically cache.
@@ -8,42 +9,11 @@ export const dynamic = "force-dynamic";
 
 export default async function CreateIntroPage() {
   const user = await requireUser();
-  const steps = copy.create.progress.steps;
 
   return (
     <AppShell username={user.username}>
-      {/* Progress indicator — step 1 of the flow (only step 1 ships in 2A). */}
-      <ol className="flex items-center gap-2" aria-label="Progreso">
-        {steps.map((label, i) => {
-          const isCurrent = i === 0;
-          return (
-            <li key={label} className="flex items-center gap-2">
-              <span
-                aria-current={isCurrent ? "step" : undefined}
-                className={[
-                  "flex h-7 w-7 flex-none items-center justify-center rounded-full text-xs font-bold",
-                  isCurrent
-                    ? "bg-violet-600 text-white"
-                    : "border border-white/15 text-white/40",
-                ].join(" ")}
-              >
-                {i + 1}
-              </span>
-              <span
-                className={[
-                  "text-xs",
-                  isCurrent ? "font-semibold text-white" : "text-white/40",
-                ].join(" ")}
-              >
-                {label}
-              </span>
-              {i < steps.length - 1 ? (
-                <span aria-hidden className="h-px w-4 bg-white/15" />
-              ) : null}
-            </li>
-          );
-        })}
-      </ol>
+      {/* Progress indicator — step 1 of the flow. */}
+      <ProgressSteps current={0} />
 
       <h1 className="mt-8 text-2xl font-bold text-white">
         {copy.create.intro.title}

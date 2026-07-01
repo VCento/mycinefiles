@@ -47,3 +47,52 @@ export const REASON_TAGS = [
   "me_atrapo",
 ] as const;
 export type ReasonTag = (typeof REASON_TAGS)[number];
+
+/* -------------------------------------------------------------------------- */
+/* Sprint 2B — duels + moment emotions                                        */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * The 7 fixed duels. `key` is the stable snake_case identity stored in
+ * `profile_duels.duel_key`; `options` are the two stable snake_case values one
+ * of which is stored in `selected_option`. Spanish labels live in
+ * `@/lib/copy/es`. Order here drives the order shown in the UI.
+ */
+export const DUELS = [
+  { key: "tension_vs_humor", options: ["tension", "humor"] },
+  { key: "happy_vs_impactful", options: ["final_feliz", "final_impactante"] },
+  { key: "realism_vs_fantasy", options: ["realismo", "fantasia"] },
+  { key: "good_vs_complex", options: ["personajes_buenos", "personajes_complejos"] },
+  { key: "light_vs_intense", options: ["liviano", "intenso"] },
+  { key: "simple_vs_thinky", options: ["historia_simple", "historia_pensar"] },
+  { key: "warmth_vs_darkness", options: ["calidez", "oscuridad_elegante"] },
+] as const;
+
+export type DuelKey = (typeof DUELS)[number]["key"];
+export type DuelOption = (typeof DUELS)[number]["options"][number];
+
+/** Lookup a duel definition by its key. */
+export function findDuel(key: string): (typeof DUELS)[number] | undefined {
+  return DUELS.find((d) => d.key === key);
+}
+
+/**
+ * Curated single-choice emotions attached to a marked moment. Stored (as a
+ * one-element array) in `user_title_reactions.emotion_tags`. Order drives UI.
+ */
+export const EMOTIONS = [
+  "adrenalina",
+  "angustia",
+  "motivacion",
+  "incomodidad",
+  "fascinacion",
+  "tristeza",
+  "euforia",
+  "rabia",
+  "nostalgia",
+  "ternura",
+  "paz",
+  "vacio",
+  "esperanza",
+] as const;
+export type Emotion = (typeof EMOTIONS)[number];

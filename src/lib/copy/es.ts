@@ -74,10 +74,11 @@ export const copy = {
   },
 
   create: {
-    // Step indicator across the whole creation flow (only step 1 ships in 2A).
+    // Step indicator across the whole creation flow. "Tu Cinefile" is the
+    // Sprint-3 generate step — labeled but inert this sprint.
     progress: {
       label: (step: number, total: number) => `Paso ${step} de ${total}`,
-      steps: ["Títulos", "Momentos", "Tu Cinefile"],
+      steps: ["Títulos", "Duelos", "Momentos", "Tu Cinefile"],
     },
     intro: {
       title: "Empecemos por lo que viste",
@@ -145,6 +146,111 @@ export const copy = {
       reasonsLabel: "Por:",
       remove: "Quitar",
     },
+    // Shared step navigation.
+    nav: {
+      next: "Siguiente",
+      back: "Volver",
+      toDuels: "Siguiente: Duelos",
+      toMoments: "Siguiente: Momentos",
+      toTitles: "Volver a Títulos",
+      backToDuels: "Volver a Duelos",
+    },
+    // Step 2 — quick A/B duels.
+    duels: {
+      title: "Duelos rápidos",
+      subtitle:
+        "Sin pensarlo mucho: ¿con cuál te quedas? No hay respuestas correctas, solo las tuyas.",
+      saving: "Guardando…",
+      error: "No pudimos guardar ese duelo. Intenta de nuevo.",
+      progress: (done: number, total: number) =>
+        `${done} de ${total} respondidos`,
+      allDone: "¡Listo! Respondiste todos. Sigamos con los momentos.",
+      // prompt = the header of each duel; options = its two choices.
+      items: {
+        tension_vs_humor: {
+          prompt: "En una buena historia prefiero…",
+          options: { tension: "Tensión", humor: "Humor" },
+        },
+        happy_vs_impactful: {
+          prompt: "El final que me gana es…",
+          options: {
+            final_feliz: "Final feliz",
+            final_impactante: "Final impactante",
+          },
+        },
+        realism_vs_fantasy: {
+          prompt: "Me atrapa más…",
+          options: { realismo: "Realismo", fantasia: "Fantasía" },
+        },
+        good_vs_complex: {
+          prompt: "Quiero personajes…",
+          options: {
+            personajes_buenos: "Buenos",
+            personajes_complejos: "Complejos",
+          },
+        },
+        light_vs_intense: {
+          prompt: "Hoy me pide el cuerpo…",
+          options: { liviano: "Algo liviano", intenso: "Algo intenso" },
+        },
+        simple_vs_thinky: {
+          prompt: "Prefiero una historia…",
+          options: {
+            historia_simple: "Simple",
+            historia_pensar: "Que me haga pensar",
+          },
+        },
+        warmth_vs_darkness: {
+          prompt: "Me mueve más…",
+          options: {
+            calidez: "Calidez emocional",
+            oscuridad_elegante: "Oscuridad elegante",
+          },
+        },
+      } as Record<
+        string,
+        { prompt: string; options: Record<string, string> }
+      >,
+    },
+    // Step 3 — mark the moments that hit.
+    moments: {
+      title: "Los momentos que te marcaron",
+      subtitle:
+        "De lo que te gustó, ¿qué escena se te quedó dentro? Elige una de la lista o escribe la tuya, y ponle una emoción.",
+      empty: {
+        title: "Aún no hay nada que marcar",
+        text: "Primero reacciona con «Me gusta», «Me encanta» o «Me marcó» a algunos títulos. Esas son las escenas que vas a marcar aquí.",
+        cta: "Volver a Títulos",
+      },
+      curatedPrompt: "Elige un momento",
+      freeToggle: "Escribir el mío",
+      freeLabel: "Tu momento",
+      freePlaceholder: "La escena que se te quedó dentro, en una frase…",
+      emotionPrompt: "¿Qué emoción te dejó?",
+      save: "Guardar momento",
+      saving: "Guardando…",
+      saved: "Momento guardado",
+      edit: "Editar",
+      pickBoth: "Marca un momento y elige una emoción para guardar.",
+      error: "No pudimos guardar ese momento. Intenta de nuevo.",
+      generate: "Generar mi Cinefile",
+      generateNote: "Muy pronto. La generación con IA llega en el próximo sprint.",
+    },
+    emotions: {
+      adrenalina: "Adrenalina",
+      angustia: "Angustia",
+      motivacion: "Motivación",
+      incomodidad: "Incomodidad",
+      fascinacion: "Fascinación",
+      tristeza: "Tristeza",
+      euforia: "Euforia",
+      rabia: "Rabia",
+      nostalgia: "Nostalgia",
+      ternura: "Ternura",
+      paz: "Paz",
+      vacio: "Vacío",
+      esperanza: "Esperanza",
+    } as Record<string, string>,
   },
 
   errors: {

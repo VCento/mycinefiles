@@ -1,4 +1,10 @@
-import type { MediaType, Reaction, ReasonTag } from "@/lib/titles/constants";
+import type {
+  MediaType,
+  Reaction,
+  ReasonTag,
+  DuelKey,
+  Emotion,
+} from "@/lib/titles/constants";
 
 /**
  * Shape returned by `searchTitles` and consumed by the search UI. The
@@ -32,4 +38,35 @@ export interface SelectionItem {
   posterPath: string | null;
   reaction: Reaction;
   reasonTags: ReasonTag[];
+}
+
+/**
+ * The current draft's duel answers, keyed by duel key. Missing keys mean the
+ * duel is still unanswered. Used to re-render selected state on load.
+ */
+export type DuelAnswers = Partial<Record<DuelKey, string>>;
+
+/** A curated moment offered for a title in the moments step. */
+export interface CuratedMoment {
+  id: string;
+  label: string;
+  description: string | null;
+}
+
+/**
+ * One positive-reaction title in the moments step: its metadata, any curated
+ * moments offered for it, and the moment/emotion already saved (if any). The
+ * moment is stored on the existing `user_title_reactions` row (2A created it).
+ */
+export interface MomentTitleItem {
+  titleId: string;
+  displayTitle: string;
+  mediaType: MediaType;
+  releaseYear: number | null;
+  posterPath: string | null;
+  reaction: Reaction;
+  curatedMoments: CuratedMoment[];
+  savedMomentId: string | null;
+  savedFreeText: string | null;
+  savedEmotion: Emotion | null;
 }

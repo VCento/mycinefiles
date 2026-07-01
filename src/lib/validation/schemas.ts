@@ -3,6 +3,8 @@ import {
   MEDIA_TYPES,
   REACTIONS,
   REASON_TAGS,
+  EMOTIONS,
+  findDuel,
 } from "@/lib/titles/constants";
 
 /**
@@ -97,3 +99,72 @@ export type SearchTitleInput = z.infer<typeof searchTitleSchema>;
 export type TitleInput = z.infer<typeof titleInputSchema>;
 export type SaveReactionInput = z.infer<typeof saveReactionSchema>;
 export type RemoveReactionInput = z.infer<typeof removeReactionSchema>;
+
+/* -------------------------------------------------------------------------- */
+/* Sprint 2B — duels + moments                                                */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * A single duel answer. Both the key and the chosen option are constrained to
+ * the curated `DUELS` table: the option must be one of the two belonging to the
+ * given duel, so a client can't smuggle an option from another duel.
+ */
+export const saveDuelSchema = z
+  .object({
+    duelKey: z.string().trim().min(1).max(60),
+    selectedOption: z.string().trim().min(1).max(60),
+  })
+  .strict()
+  .superRefine((val, ctx) => {
+    const duel = findDuel(val.duelKey);
+    if (!duel) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Duelo desconocido.",
+        path: ["duelKey"],
+      });
+      return;
+    }
+    if (!(duel.options as readonly string[]).includes(val.selectedOption)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Opción no válida para este duelo.",
+        path: ["selectedOption"],
+      });
+    }
+  });
+
+/**
+ * Marking a moment for a positive-reaction title. Exactly ONE of `momentId`
+ * (a curated moment) or `freeTextMoment` (a typed sentence) must be present.
+ * The free text is trimmed and length-clamped here; the action sanitizes it
+ * further before persisting. Emotion is a single curated value.
+ */
+export const saveMomentSchema = z
+  .object({
+    titleId: z.string().uuid(),
+    momentId: z.string().uuid().optional(),
+    freeTextMoment: z
+      .string()
+      .trim()
+      .min(3, "Cuéntanos un poco más.")
+      .max(280, "Hazlo un poco más corto.")
+      .optional(),
+    emotion: z.enum(EMOTIONS),
+  })
+  .strict()
+  .superRefine((val, ctx) => {
+    const hasMoment = typeof val.momentId === "string";
+    const hasText =
+      typeof val.freeTextMoment === "string" && val.freeTextMoment.length > 0;
+    if (hasMoment === hasText) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Elige un momento de la lista o escribe el tuyo.",
+        path: ["freeTextMoment"],
+      });
+    }
+  });
+
+export type SaveDuelInput = z.infer<typeof saveDuelSchema>;
+export type SaveMomentInput = z.infer<typeof saveMomentSchema>;
