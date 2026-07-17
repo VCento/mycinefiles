@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.110.0",
     "@supabase/supabase-js": "^2.45.0",
     "bcryptjs": "^3.0.0",
     "iron-session": "^8.0.0",

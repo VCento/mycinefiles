@@ -45,9 +45,14 @@ interface DraftProfile {
 }
 
 /**
- * Returns the current user's draft profile, creating one if none exists.
- * `public_slug` is NOT NULL, so it is generated at creation with a retry on the
- * (extremely unlikely) unique collision. Status stays 'draft' this sprint.
+ * Returns the current user's canonical profile, creating one (status 'draft')
+ * if none exists. `public_slug` is NOT NULL, so it is generated at creation
+ * with a retry on the (extremely unlikely) unique collision.
+ *
+ * Since Sprint 3 the lookup is NOT filtered by status: once generation flips
+ * the row to 'ready', later edits to titles/duels/moments keep attaching to
+ * the SAME profile, so regeneration updates that row and the public slug
+ * stays stable. Each user effectively has one profile (the earliest).
  *
  * Exported for reuse by the actions below; the routes themselves call the read
  * action (`getDraftSelection`) which lazily triggers creation "on demand".
@@ -61,7 +66,6 @@ export async function ensureDraftProfile(): Promise<ActionResult<DraftProfile>> 
       .from("profiles")
       .select("id, public_slug, status")
       .eq("user_id", user.userId)
-      .eq("status", "draft")
       .order("created_at", { ascending: true })
       .limit(1)
       .maybeSingle();
@@ -105,14 +109,13 @@ export async function ensureDraftProfile(): Promise<ActionResult<DraftProfile>> 
         };
       }
 
-      // 23505 = unique_violation. A race could also create a draft for this
+      // 23505 = unique_violation. A race could also create a profile for this
       // user concurrently; re-check before retrying with a fresh slug.
       if (insertError?.code === "23505") {
         const { data: raced } = await supabase
           .from("profiles")
           .select("id, public_slug, status")
           .eq("user_id", user.userId)
-          .eq("status", "draft")
           .order("created_at", { ascending: true })
           .limit(1)
           .maybeSingle();

@@ -13,7 +13,7 @@ interface CreateMomentsClientProps {
 /**
  * Step 3 orchestrator. Shows one MomentCard per positive-reaction title, or an
  * empty state pointing back to titles when there are none yet. The final
- * "generate" control is a labeled, inert Sprint-3 placeholder.
+ * "generate" control links to the Sprint-3 generation step.
  */
 export function CreateMomentsClient({ initialItems }: CreateMomentsClientProps) {
   // Track which titles have a saved moment (idempotent across re-saves/edits).
@@ -83,16 +83,14 @@ export function CreateMomentsClient({ initialItems }: CreateMomentsClientProps) 
         ))}
       </div>
 
-      {/* Inert Sprint-3 placeholder — labeled, does nothing this sprint. */}
+      {/* Next step: the Sprint-3 generation page. */}
       <div className="mt-2 rounded-2xl border border-white/10 bg-white/[0.02] p-4 text-center">
-        <button
-          type="button"
-          disabled
-          aria-disabled="true"
-          className="inline-flex min-h-12 cursor-not-allowed items-center justify-center rounded-xl bg-violet-600/40 px-6 text-base font-semibold text-white/70"
+        <Link
+          href="/create/generate"
+          className="inline-flex min-h-12 items-center justify-center rounded-xl bg-violet-600 px-6 text-base font-semibold text-white shadow-lg shadow-violet-900/40 transition-colors hover:bg-violet-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-400 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-950"
         >
           {copy.create.moments.generate}
-        </button>
+        </Link>
         <p className="mt-2 text-xs text-white/40">
           {copy.create.moments.generateNote}
         </p>

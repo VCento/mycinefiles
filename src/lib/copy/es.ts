@@ -70,6 +70,9 @@ export const copy = {
     emptyText:
       "Todavía no marcaste nada. Busca títulos que te importan y empieza a construir tu perfil.",
     emptyCta: "Empezar mi Cinefile",
+    readyTitle: "Tu Cinefile está listo",
+    readyText: "Esto explica demasiado. Míralo completo o comparte el enlace.",
+    readyCta: "Ver mi Cinefile",
     logout: "Cerrar sesión",
   },
 
@@ -234,7 +237,37 @@ export const copy = {
       pickBoth: "Marca un momento y elige una emoción para guardar.",
       error: "No pudimos guardar ese momento. Intenta de nuevo.",
       generate: "Generar mi Cinefile",
-      generateNote: "Muy pronto. La generación con IA llega en el próximo sprint.",
+      generateNote: "El último paso: deja que la IA lea todo esto.",
+    },
+    // Step 4 — generate the Cinefile (Sprint 3).
+    generate: {
+      title: "Tu Cinefile",
+      subtitle:
+        "Ya tenemos material. Ahora la IA lo lee todo — reacciones, duelos, momentos — y escribe quién eres cuando apagas la luz.",
+      summary: (titles: number, duels: number, moments: number) =>
+        `${titles === 1 ? "1 título" : `${titles} títulos`}, ${duels} ${duels === 1 ? "duelo" : "duelos"}, ${moments === 1 ? "1 momento" : `${moments} momentos`}`,
+      button: "Generar mi Cinefile",
+      regenerate: "Volver a generar mi Cinefile",
+      regenerateNote:
+        "Ya tienes un Cinefile. Generar de nuevo lo reemplaza con una lectura fresca de tu material.",
+      // The fun loading ritual: rotating while the AI thinks.
+      ritual: [
+        "Analizando tus traumas cinematográficos…",
+        "Detectando tu villano interior…",
+        "Calculando tu tolerancia al drama…",
+        "Buscando la escena que te dejó raro…",
+        "Midiendo cuánta oscuridad aceptas un domingo…",
+      ],
+      guardTitle: "Nos falta un poco de material",
+      guardPositives:
+        "Reacciona positivamente («Me gusta», «Me encanta» o «Me marcó») a al menos 3 títulos.",
+      guardRejections:
+        "Marca al menos un título que NO sea para ti — el contraste también te define.",
+      guardCta: "Volver a Títulos",
+      failed:
+        "No pudimos generar tu perfil ahora, tu avance está guardado. Intenta de nuevo en un momento.",
+      rateLimited:
+        "Generaste hace muy poco. Dale un respiro a la IA y vuelve a intentar en un rato.",
     },
     emotions: {
       adrenalina: "Adrenalina",
@@ -251,6 +284,60 @@ export const copy = {
       vacio: "Vacío",
       esperanza: "Esperanza",
     } as Record<string, string>,
+  },
+
+  // The Cinefile itself: card labels + the 13 trait dimension labels.
+  cinefile: {
+    cardWordmark: "CINEFILES",
+    cardTagline: "El perfil según lo que te marcó",
+    traitsHeading: "Tus dimensiones",
+    traitLabels: {
+      intensidad_emocional: "Intensidad emocional",
+      tolerancia_oscuridad: "Tolerancia a la oscuridad",
+      humor: "Humor",
+      romanticismo: "Romanticismo",
+      fantasia: "Fantasía",
+      realismo: "Realismo",
+      complejidad_narrativa: "Complejidad narrativa",
+      nostalgia: "Nostalgia",
+      adrenalina: "Adrenalina",
+      sensibilidad_estetica: "Sensibilidad estética",
+      curiosidad_intelectual: "Curiosidad intelectual",
+      calidez: "Calidez",
+      apertura_incomodidad: "Apertura a lo incómodo",
+    } as Record<string, string>,
+  },
+
+  // /me — the private full profile.
+  me: {
+    ready: "Tu Cinefile está listo. Esto explica demasiado.",
+    copyLink: "Copiar enlace",
+    copied: "Enlace copiado",
+    update: "Actualizar mi Cinefile",
+    sections: {
+      deepSummary: "Tu lectura completa",
+      formula: "Tu fórmula",
+      strengths: "Fortalezas",
+      blindSpots: "Puntos ciegos",
+    },
+    empty: {
+      title: "Todavía no hay Cinefile",
+      text: "Completa el recorrido — títulos, duelos, momentos — y genera tu perfil.",
+      cta: "Crear mi Cinefile",
+    },
+  },
+
+  // /p/[slug] — the public share page (card-level content only).
+  publicProfile: {
+    intro: (name: string) => `El Cinefile de ${name}`,
+    copyLink: "Copiar enlace",
+    copied: "Enlace copiado",
+    cta: "Crear mi propio Cinefile",
+    notFound: {
+      title: "Este Cinefile no existe (todavía)",
+      text: "El enlace puede estar mal escrito, o su dueño aún no lo generó.",
+      cta: "Crear el mío",
+    },
   },
 
   errors: {
