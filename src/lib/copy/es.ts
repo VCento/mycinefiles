@@ -320,6 +320,12 @@ export const copy = {
       strengths: "Fortalezas",
       blindSpots: "Puntos ciegos",
     },
+    recs: {
+      title: "Para ti",
+      subtitle: "Lo que tu Cinefile pide a gritos.",
+      match: (n: number) => `${n}% afinidad`,
+      empty: "Aún no hay recomendaciones. Genera tu Cinefile para recibirlas.",
+    },
     empty: {
       title: "Todavía no hay Cinefile",
       text: "Completa el recorrido — títulos, duelos, momentos — y genera tu perfil.",

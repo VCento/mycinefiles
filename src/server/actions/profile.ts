@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { getSupabaseAdmin } from "@/lib/db/supabase";
 import { requireUser } from "@/lib/auth/session";
 import { checkRateLimit } from "@/lib/auth/rateLimit";
@@ -31,6 +32,17 @@ import type { ActionResult } from "@/server/actions/auth";
 const MIN_POSITIVE_REACTIONS = 3;
 const MIN_REJECTIONS = 1;
 
+async function getClientIp(): Promise<string> {
+  try {
+    const h = await headers();
+    const forwarded = h.get("x-forwarded-for");
+    if (forwarded) return forwarded.split(",")[0]!.trim();
+    return h.get("x-real-ip") ?? "unknown";
+  } catch {
+    return "unknown";
+  }
+}
+
 /** The full private profile view for /me (and the dashboard mini-card). */
 export interface CinefileView {
   displayName: string;
@@ -40,6 +52,7 @@ export interface CinefileView {
   shortSummary: string | null;
   deepSummary: string | null;
   shareQuote: string | null;
+  styleTags: string[];
   traits: Record<string, number>;
   formula: string[];
   strengths: string[];
@@ -53,7 +66,17 @@ export interface PublicCinefileView {
   archetype: string | null;
   shortSummary: string | null;
   shareQuote: string | null;
+  styleTags: string[];
   traits: Record<string, number>;
+}
+
+/** One persisted recommendation, read-only for /me ("Para ti"). */
+export interface RecommendationView {
+  id: string;
+  title: string;
+  reason: string;
+  matchScore: number | null;
+  category: string | null;
 }
 
 /** What the generate page needs to render the summary + guard. */
@@ -193,16 +216,6 @@ export async function generateProfile(): Promise<ActionResult<CinefileView>> {
   try {
     const user = await requireUser();
 
-    // Per-user (not per-IP): the cost belongs to the account, and a shared IP
-    // must not let one user exhaust another's budget.
-    const limit = checkRateLimit(`generate:${user.userId}`, {
-      capacity: 3,
-      refillPerSecond: 3 / 3600,
-    });
-    if (!limit.allowed) {
-      return { ok: false, error: copy.create.generate.rateLimited };
-    }
-
     const profile = await ensureDraftProfile();
     if (!profile.ok) return profile;
     const profileId = profile.data.id;
@@ -223,6 +236,18 @@ export async function generateProfile(): Promise<ActionResult<CinefileView>> {
         missing.push(copy.create.generate.guardRejections);
       }
       return { ok: false, error: missing.join(" ") };
+    }
+
+    // Rate-limited AFTER the material guard so a guard-failing request never
+    // burns generation budget (DEBT-008a) — but always BEFORE the AI call.
+    // Per-user (not per-IP): the cost belongs to the account, and a shared IP
+    // must not let one user exhaust another's budget.
+    const limit = checkRateLimit(`generate:${user.userId}`, {
+      capacity: 3,
+      refillPerSecond: 3 / 3600,
+    });
+    if (!limit.allowed) {
+      return { ok: false, error: copy.create.generate.rateLimited };
     }
 
     const { data: duelRows, error: duelsError } = await supabase
@@ -289,6 +314,7 @@ export async function generateProfile(): Promise<ActionResult<CinefileView>> {
         short_summary: output.shortSummary,
         deep_summary: output.deepSummary,
         share_quote: output.shareQuote,
+        style_tags: output.styleTags,
         traits: output.traits,
         formula: output.formula,
         strengths: output.strengths,
@@ -338,6 +364,7 @@ export async function generateProfile(): Promise<ActionResult<CinefileView>> {
         shortSummary: output.shortSummary,
         deepSummary: output.deepSummary,
         shareQuote: output.shareQuote,
+        styleTags: output.styleTags,
         traits: output.traits,
         formula: output.formula,
         strengths: output.strengths,
@@ -363,7 +390,7 @@ export async function getMyProfile(): Promise<ActionResult<CinefileView | null>>
     const { data: row, error } = await supabase
       .from("profiles")
       .select(
-        "public_slug, status, archetype, short_summary, deep_summary, share_quote, traits, formula, strengths, blind_spots, app_users ( display_name )",
+        "public_slug, status, archetype, short_summary, deep_summary, share_quote, style_tags, traits, formula, strengths, blind_spots, app_users ( display_name )",
       )
       .eq("user_id", user.userId)
       .order("created_at", { ascending: true })
@@ -389,6 +416,7 @@ export async function getMyProfile(): Promise<ActionResult<CinefileView | null>>
         shortSummary: (r.short_summary as string | null) ?? null,
         deepSummary: (r.deep_summary as string | null) ?? null,
         shareQuote: (r.share_quote as string | null) ?? null,
+        styleTags: jsonbStringArray(r.style_tags),
         traits: jsonbNumberRecord(r.traits),
         formula: jsonbStringArray(r.formula),
         strengths: jsonbStringArray(r.strengths),
@@ -419,11 +447,22 @@ export async function getPublicCinefile(
       return { ok: true, data: null };
     }
 
+    // Generous per-IP bucket (DEBT-008b): this is an unauthenticated endpoint;
+    // normal sharing never trips ~60/min, scripted hammering does.
+    const ip = await getClientIp();
+    const limit = checkRateLimit(`public-profile:${ip}`, {
+      capacity: 60,
+      refillPerSecond: 1,
+    });
+    if (!limit.allowed) {
+      return { ok: false, error: copy.errors.rateLimited };
+    }
+
     const supabase = getSupabaseAdmin();
     const { data: row, error } = await supabase
       .from("profiles")
       .select(
-        "public_slug, archetype, short_summary, share_quote, traits, app_users ( display_name )",
+        "public_slug, archetype, short_summary, share_quote, style_tags, traits, app_users ( display_name )",
       )
       .eq("public_slug", slug)
       .eq("status", "ready")
@@ -446,11 +485,69 @@ export async function getPublicCinefile(
         archetype: (r.archetype as string | null) ?? null,
         shortSummary: (r.short_summary as string | null) ?? null,
         shareQuote: (r.share_quote as string | null) ?? null,
+        styleTags: jsonbStringArray(r.style_tags),
         traits: jsonbNumberRecord(r.traits),
       },
     };
   } catch (error) {
     console.error("[getPublicCinefile] unexpected error:", error);
+    return { ok: false, error: copy.errors.generic };
+  }
+}
+
+/**
+ * The caller's persisted recommendations for /me ("Para ti"). Read-only — no
+ * AI call here; rows were written by generateProfile. Best matches first.
+ */
+export async function getMyRecommendations(): Promise<
+  ActionResult<RecommendationView[]>
+> {
+  try {
+    const user = await requireUser();
+    const supabase = getSupabaseAdmin();
+
+    // Read-only profile lookup (never creates a row, unlike ensureDraftProfile).
+    const { data: profileRow, error: profileError } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("user_id", user.userId)
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (profileError) {
+      console.error("[getMyRecommendations] profile lookup error:", profileError);
+      return { ok: false, error: copy.errors.generic };
+    }
+    if (!profileRow) return { ok: true, data: [] };
+
+    const { data: rows, error } = await supabase
+      .from("recommendations")
+      .select("id, title_text, reason, match_score, category")
+      .eq("profile_id", profileRow.id as string)
+      .order("match_score", { ascending: false });
+
+    if (error) {
+      console.error("[getMyRecommendations] select error:", error);
+      return { ok: false, error: copy.errors.generic };
+    }
+
+    const items: RecommendationView[] = (rows ?? []).map((row) => {
+      const r = row as Record<string, unknown>;
+      return {
+        id: r.id as string,
+        title: r.title_text as string,
+        reason: r.reason as string,
+        matchScore:
+          typeof r.match_score === "number" ? (r.match_score as number) : null,
+        category: (r.category as string | null) ?? null,
+      };
+    });
+
+    return { ok: true, data: items };
+  } catch (error) {
+    if (isRedirectError(error)) throw error;
+    console.error("[getMyRecommendations] unexpected error:", error);
     return { ok: false, error: copy.errors.generic };
   }
 }

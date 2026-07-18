@@ -28,16 +28,19 @@ const ARCHETYPES = [
     archetype: "Cartógrafo de Emociones Fuertes",
     shareQuote:
       "No busco películas que me entretengan: busco las que me dejan pensando a las 2 a.m.",
+    styleTags: ["Drama con nervio", "Tensión elegante", "Finales que duelen"],
   },
   {
     archetype: "Coleccionista de Silencios Incómodos",
     shareQuote:
       "Mi género favorito es esa escena que nadie más recuerda y yo no puedo olvidar.",
+    styleTags: ["Comedia incómoda", "Intimismo afilado", "Silencios con carga"],
   },
   {
     archetype: "Arquitecta de Finales Abiertos",
     shareQuote:
       "Prefiero un final que me rompa un poco a uno que me deje igual que antes.",
+    styleTags: ["Misterio emocional", "Drama de autor", "Ambigüedad elegante"],
   },
 ] as const;
 
@@ -124,6 +127,7 @@ export async function generateMockProfile(
     shortSummary: `Tus gustos muestran a alguien que no ve historias: las habita. Entre ${firstLove} y tus duelos se dibuja un patrón claro — buscas emoción con sustancia, y cuando algo te marca, te marca de verdad.`,
     deepSummary: `Hay un hilo conductor en tu material: no eliges títulos por lo que prometen, sino por lo que te dejan. Tus reacciones más fuertes se concentran en historias que combinan tensión emocional con personajes que no se dejan resumir en una frase. Los momentos que marcaste lo confirman: recuerdas escenas de quiebre, no de espectáculo.\n\nTus duelos dibujan a alguien que tolera bien la incomodidad narrativa: prefieres que una historia te exija a que te arrulle. Eso no significa que no disfrutes lo liviano — significa que hasta en lo liviano buscas una chispa de verdad. Y cuando la encuentras, la conviertes en referencia personal: tus títulos favoritos funcionan como un idioma privado con el que explicas el mundo.`,
     shareQuote: variant.shareQuote,
+    styleTags: [...variant.styleTags],
     traits: buildTraits(input),
     formula: [
       "40% tensión con propósito",

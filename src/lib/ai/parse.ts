@@ -42,6 +42,7 @@ const profileOutputSchema = z.object({
   shortSummary: z.string().trim().min(1).max(600),
   deepSummary: z.string().trim().min(1).max(3000),
   shareQuote: z.string().trim().min(1).max(300),
+  styleTags: z.array(z.string().trim().min(1).max(30)).min(2).max(4),
   traits: traitsSchema,
   formula: z.array(z.string().trim().min(1).max(120)).min(1).max(8),
   strengths: z.array(z.string().trim().min(1).max(200)).min(1).max(6),

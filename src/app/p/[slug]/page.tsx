@@ -50,6 +50,7 @@ export default async function PublicProfilePage({
               archetype={profile.archetype}
               shortSummary={profile.shortSummary}
               shareQuote={profile.shareQuote}
+              styleTags={profile.styleTags}
               traits={profile.traits}
             />
 

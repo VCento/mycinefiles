@@ -85,6 +85,12 @@ export interface ProfileGenerationOutput {
   shortSummary: string;
   deepSummary: string;
   shareQuote: string;
+  /**
+   * 2-4 short Spanish style claims coined for this user — personality-flavored
+   * genre claims ("Drama con nervio"), not plain genres. Card-safe: rendered
+   * as chips on the ShareCard and the public page.
+   */
+  styleTags: string[];
   traits: TraitScores;
   formula: string[];
   strengths: string[];

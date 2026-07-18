@@ -38,6 +38,7 @@ Responde SOLO con un objeto JSON con EXACTAMENTE estas claves:
   "shortSummary": string — 2-3 frases que capturan su esencia cinematográfica; compartible,
   "deepSummary": string — 2-3 párrafos que leen sus patrones: qué busca, qué evita, qué le pasa con lo que ve,
   "shareQuote": string — UNA frase memorable en primera persona para compartir (máx 140 caracteres),
+  "styleTags": array de 2-4 strings — sellos de estilo acuñados para esta persona: género + personalidad en 2-3 palabras (máx 30 caracteres cada uno; ej. "Drama con nervio", "Comedia incómoda", "Tensión elegante"). NO géneros planos como "Drama" o "Comedia",
   "traits": objeto con EXACTAMENTE estas 13 claves, cada una un número 0-100: ${traitList},
   "formula": array de 3-5 strings cortos — los ingredientes de su fórmula (ej. "40% tensión elegante"),
   "strengths": array de 3-4 strings — fortalezas de su forma de ver historias,

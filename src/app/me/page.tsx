@@ -3,7 +3,7 @@ import { requireUser } from "@/lib/auth/session";
 import { AppShell } from "@/components/AppShell";
 import { ShareCard } from "@/components/ShareCard";
 import { CopyLinkButton } from "@/components/CopyLinkButton";
-import { getMyProfile } from "@/server/actions/profile";
+import { getMyProfile, getMyRecommendations } from "@/server/actions/profile";
 import { env } from "@/lib/env";
 import { copy } from "@/lib/copy/es";
 
@@ -43,6 +43,10 @@ export default async function MePage() {
   // Built server-side: env is server-only; the client only sees the final URL.
   const shareUrl = `${env.NEXT_PUBLIC_APP_URL}/p/${profile.publicSlug}`;
 
+  // Persisted by generateProfile — read-only here, no AI call.
+  const recsResult = await getMyRecommendations();
+  const recommendations = recsResult.ok ? recsResult.data : [];
+
   return (
     <AppShell username={user.username}>
       <p className="mb-5 text-base font-semibold text-violet-300">
@@ -54,6 +58,7 @@ export default async function MePage() {
         archetype={profile.archetype}
         shortSummary={profile.shortSummary}
         shareQuote={profile.shareQuote}
+        styleTags={profile.styleTags}
         traits={profile.traits}
       />
 
@@ -70,6 +75,52 @@ export default async function MePage() {
           {copy.me.update}
         </Link>
       </div>
+
+      {/* "Para ti" — persisted recommendations. PRIVATE: never on /p/[slug]. */}
+      {recommendations.length > 0 ? (
+        <section className="mt-8">
+          <h2 className="text-sm font-bold uppercase tracking-wide text-white/50">
+            {copy.me.recs.title}
+          </h2>
+          <p className="mt-1 text-xs text-white/40">{copy.me.recs.subtitle}</p>
+          <ul className="mt-4 flex flex-col gap-3">
+            {recommendations.map((rec) => (
+              <li
+                key={rec.id}
+                className="rounded-2xl border border-white/10 bg-white/[0.02] p-4"
+              >
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="min-w-0 truncate text-base font-semibold text-white">
+                    {rec.title}
+                  </span>
+                  {rec.matchScore != null ? (
+                    <span className="flex-none font-mono text-xs font-bold tabular-nums text-violet-300">
+                      {copy.me.recs.match(rec.matchScore)}
+                    </span>
+                  ) : null}
+                </div>
+                <p className="mt-1.5 text-sm leading-relaxed text-white/60">
+                  {rec.reason}
+                </p>
+                {rec.category ? (
+                  <span className="mt-3 inline-block rounded-full border border-white/15 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/50">
+                    {rec.category}
+                  </span>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : (
+        <section className="mt-8">
+          <h2 className="text-sm font-bold uppercase tracking-wide text-white/50">
+            {copy.me.recs.title}
+          </h2>
+          <p className="mt-3 rounded-2xl border border-dashed border-white/15 bg-white/[0.02] p-4 text-sm text-white/50">
+            {copy.me.recs.empty}
+          </p>
+        </section>
+      )}
 
       {/* Deep sections — private only, never on /p/[slug]. */}
       {profile.deepSummary ? (
