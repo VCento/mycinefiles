@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth/session";
 import { AppShell } from "@/components/AppShell";
 import { ShareCard } from "@/components/ShareCard";
 import { CopyLinkButton } from "@/components/CopyLinkButton";
+import { CompareEntry } from "@/components/compare/CompareEntry";
 import { getMyProfile, getMyRecommendations } from "@/server/actions/profile";
 import { env } from "@/lib/env";
 import { copy } from "@/lib/copy/es";
@@ -75,6 +76,9 @@ export default async function MePage() {
           {copy.me.update}
         </Link>
       </div>
+
+      {/* "Comparar" — paste a friend's card link, jump to /compare (Sprint 4B). */}
+      <CompareEntry mySlug={profile.publicSlug} />
 
       {/* "Para ti" — persisted recommendations. PRIVATE: never on /p/[slug]. */}
       {recommendations.length > 0 ? (

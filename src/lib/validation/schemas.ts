@@ -168,3 +168,29 @@ export const saveMomentSchema = z
 
 export type SaveDuelInput = z.infer<typeof saveDuelSchema>;
 export type SaveMomentInput = z.infer<typeof saveMomentSchema>;
+
+/* -------------------------------------------------------------------------- */
+/* Sprint 4B — compare                                                        */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * public_slug shape from generatePublicSlug() (base64url). Lenient bounds.
+ * Shared by the /compare route, the compare query, and the /me entry form.
+ */
+export const PUBLIC_SLUG_REGEX = /^[A-Za-z0-9_-]{4,32}$/;
+
+/**
+ * Raw input of the "Comparar" entry form on /me: a full card URL or a bare
+ * slug. Slug extraction happens after this gate (see `@/lib/compare/slug`).
+ */
+export const compareEntrySchema = z
+  .object({
+    target: z
+      .string()
+      .trim()
+      .min(1, "Pega un enlace o un código.")
+      .max(300, "Eso es muy largo para ser un enlace de Cinefile."),
+  })
+  .strict();
+
+export type CompareEntryInput = z.infer<typeof compareEntrySchema>;

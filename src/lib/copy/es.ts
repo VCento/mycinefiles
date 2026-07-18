@@ -346,6 +346,75 @@ export const copy = {
     },
   },
 
+  // /compare/[slugA]/[slugB] — public comparison page + /me entry form.
+  compare: {
+    // Entry form on /me.
+    entry: {
+      title: "Comparar",
+      subtitle:
+        "Pega el enlace del Cinefile de alguien (o su código) y mira qué tanto se parecen.",
+      placeholder: "Enlace o código de un Cinefile…",
+      submit: "Comparar",
+      invalid:
+        "Eso no parece un Cinefile. Pega el enlace completo o el código que va después de /p/.",
+    },
+    intro: "Dos Cinefiles, frente a frente",
+    vs: "vs",
+    scoreLabel: "de compatibilidad",
+    // Verdict tiers by score range, DESCENDING by `min` (last one must be 0).
+    // Warm tone, never a loser, never clinical.
+    verdicts: [
+      {
+        min: 90,
+        title: "Almas gemelas cinematográficas",
+        text: "Ven las mismas películas y les duelen las mismas escenas. Esto se cuida.",
+      },
+      {
+        min: 75,
+        title: "Muy compatibles, con chispa",
+        text: "Coinciden en lo importante y discuten en lo divertido. La mejor combinación para un sofá.",
+      },
+      {
+        min: 60,
+        title: "Química inesperada",
+        text: "No parecen del mismo mundo, pero algo hace clic. Esas son las mejores historias.",
+      },
+      {
+        min: 40,
+        title: "Opuestos que se atraen",
+        text: "Cada uno le abre al otro una puerta que solo no habría cruzado. Aprovechen.",
+      },
+      {
+        min: 0,
+        title: "De planetas distintos (y eso está bien)",
+        text: "Sus universos casi no se tocan. Motivo perfecto para intercambiar recomendaciones.",
+      },
+    ],
+    sections: {
+      closest: "Donde más se parecen",
+      farthest: "Donde chocan (con estilo)",
+      titles: "Títulos que comparten",
+      tags: "Sus estilos, lado a lado",
+    },
+    titlesEmpty:
+      "Ningún título en común (todavía). Ahí hay una conversación pendiente.",
+    tagsShared: "Los estilos que comparten se encienden.",
+    // Same slug on both sides — a feature, not an error.
+    self: {
+      title: "Compararte contigo mismo da 100%. Obvio.",
+      text: "Mejor pásale tu enlace a alguien y comparen de verdad.",
+      cta: "Crear mi propio Cinefile",
+    },
+    copyLink: "Copiar enlace",
+    copied: "Enlace copiado",
+    cta: "Crear mi propio Cinefile",
+    notFound: {
+      title: "Esta comparación no existe (todavía)",
+      text: "Alguno de los dos enlaces está mal escrito, o su dueño aún no generó su Cinefile.",
+      cta: "Crear el mío",
+    },
+  },
+
   errors: {
     generic: "Algo salió mal. Intenta de nuevo.",
     invalidCredentials: "Usuario o clave incorrectos.",
