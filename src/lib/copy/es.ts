@@ -250,7 +250,7 @@ export const copy = {
       summary: (titles: number, duels: number, moments: number) =>
         `${titles === 1 ? "1 título" : `${titles} títulos`}, ${duels} ${duels === 1 ? "duelo" : "duelos"}, ${moments === 1 ? "1 momento" : `${moments} momentos`}`,
       button: "Generar mi Cinefile",
-      regenerate: "Volver a generar mi Cinefile",
+      regenerate: "Actualizar mi carta",
       regenerateNote:
         "Ya tienes un Cinefile. Generar de nuevo lo reemplaza con una lectura fresca de tu material.",
       // The fun loading ritual: rotating while the AI thinks.
