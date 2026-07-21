@@ -164,6 +164,9 @@ export const copy = {
       subtitle:
         "Sin pensarlo mucho: ¿con cuál te quedas? No hay respuestas correctas, solo las tuyas.",
       saving: "Guardando…",
+      loading: "Cargando tus respuestas…",
+      loadError: "No pudimos cargar tus respuestas guardadas.",
+      retry: "Reintentar",
       error: "No pudimos guardar ese duelo. Intenta de nuevo.",
       progress: (done: number, total: number) =>
         `${done} de ${total} respondidos`,
